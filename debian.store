@@ -1,1 +1,1 @@
-{"base": "a50e86b", "parent": "debian/rolling/ros2_socketcan_msgs", "previous": "d5dac9c", "trim": "", "trimbase": ""}
+{"base": "44ab84007e63", "parent": "debian/kilted/ros2_socketcan_msgs", "previous": "0b950f463718", "trim": "", "trimbase": ""}
