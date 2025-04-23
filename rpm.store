@@ -1,1 +1,1 @@
-{"base": "1811942", "parent": "rpm/rolling/ros2_socketcan_msgs", "previous": "325a910", "trim": "", "trimbase": ""}
+{"base": "2b275fd39752", "parent": "rpm/kilted/ros2_socketcan_msgs", "previous": "a93da02a73d0", "trim": "", "trimbase": ""}
