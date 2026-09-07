@@ -1,13 +1,16 @@
 name: vcan test
 
 on:
+  push:
+    branches:
+      - 'main'
   pull_request:
 
 jobs:
   vcan_test:
     runs-on: ubuntu-26.04
     container:
-      image: rostooling/setup-ros-docker:ubuntu-noble-ros-jazzy-ros-base-latest
+      image: rostooling/setup-ros-docker:ubuntu-resolute-ros-lyrical-ros-base-latest
       options: --cap-add NET_ADMIN
     steps:
       - name: checkout
@@ -28,5 +31,5 @@ jobs:
           ROS2_SOCKETCAN_REQUIRE_VCAN0: "1"
         with:
           package-name: ros2_socketcan ros2_socketcan_msgs
-          target-ros2-distro: jazzy
+          target-ros2-distro: lyrical
           vcs-repo-file-url: ""

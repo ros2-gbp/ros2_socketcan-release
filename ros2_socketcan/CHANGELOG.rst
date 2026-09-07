@@ -4,19 +4,18 @@ Changelog for package ros2_socketcan
 
 1.4.0 (2026-09-07)
 ------------------
-- Added ``warn_on_receive_timeout`` to control timeout warnings without suppressing other receive errors (`#101 <https://github.com/autowarefoundation/ros2_socketcan/issues/101>`_).
-- Stopped and joined the receiver thread on node destruction, lifecycle cleanup, and shutdown (`#100 <https://github.com/autowarefoundation/ros2_socketcan/issues/100>`_).
-- Added ``rx:<interface>`` receiver thread names and five tests for destruction and reconfiguration (`#99 <https://github.com/autowarefoundation/ros2_socketcan/issues/99>`_).
-- Added optional Agnocast support with ``CallbackIsolatedAgnocastExecutor`` (`#98 <https://github.com/autowarefoundation/ros2_socketcan/issues/98>`_).
-- Added the sender-only ``enable_frame_loopback`` parameter, disabled by default (`#97 <https://github.com/autowarefoundation/ros2_socketcan/issues/97>`_).
-- Added an ``enable_loopback`` argument before ``default_id`` in the ``SocketCanSender`` constructor (`#97 <https://github.com/autowarefoundation/ros2_socketcan/issues/97>`_).
-- Added the ``filters`` argument to the XML bridge launch file (`#96 <https://github.com/autowarefoundation/ros2_socketcan/issues/96>`_).
-- Enabled CAN FD topic remapping through the launch files (`#94 <https://github.com/autowarefoundation/ros2_socketcan/issues/94>`_).
-- Added support for variable-length CAN FD frames (`#93 <https://github.com/autowarefoundation/ros2_socketcan/issues/93>`_).
-- Fixed rejection of extended CAN IDs with the extended-frame flag set (`#92 <https://github.com/autowarefoundation/ros2_socketcan/issues/92>`_).
-- Renamed the design document to ``README.md`` (`#91 <https://github.com/autowarefoundation/ros2_socketcan/issues/91>`_).
-- Installed headers under a package-specific include directory with ``USE_SCOPED_HEADER_INSTALL_DIR`` (`#68 <https://github.com/autowarefoundation/ros2_socketcan/issues/68>`_).
-- Contributors: Finn S., Mete Fatih Cırıt
+- Added ``warn_on_receive_timeout`` to control timeout warnings without suppressing other receive errors (`#59 <https://github.com/autowarefoundation/ros2_socketcan/issues/59>`_).
+- Stopped and joined the receiver thread on node destruction, lifecycle cleanup, and shutdown (`#75 <https://github.com/autowarefoundation/ros2_socketcan/issues/75>`_).
+- Added ``rx:<interface>`` receiver thread names and five tests for destruction and reconfiguration (`#89 <https://github.com/autowarefoundation/ros2_socketcan/issues/89>`_).
+- Added optional Agnocast support with ``CallbackIsolatedAgnocastExecutor`` (`#72 <https://github.com/autowarefoundation/ros2_socketcan/issues/72>`_).
+- Added the sender-only ``enable_frame_loopback`` parameter, disabled by default (`#66 <https://github.com/autowarefoundation/ros2_socketcan/issues/66>`_).
+- Added an ``enable_loopback`` argument before ``default_id`` in the ``SocketCanSender`` constructor (`#66 <https://github.com/autowarefoundation/ros2_socketcan/issues/66>`_).
+- Added the ``filters`` argument to the XML bridge launch file (`#63 <https://github.com/autowarefoundation/ros2_socketcan/issues/63>`_).
+- Enabled CAN FD topic remapping through the launch files (`#52 <https://github.com/autowarefoundation/ros2_socketcan/issues/52>`_).
+- Added support for variable-length CAN FD frames (`#50 <https://github.com/autowarefoundation/ros2_socketcan/issues/50>`_).
+- Fixed rejection of extended CAN IDs with the extended-frame flag set (`#40 <https://github.com/autowarefoundation/ros2_socketcan/issues/40>`_).
+- Renamed the design document to ``README.md`` (`#37 <https://github.com/autowarefoundation/ros2_socketcan/issues/37>`_).
+- Contributors: Albers Franz, ChinYikMing, Ismet Atabay, Joshua Whitley, Kevin Hallenbeck, M. Fatih Cırıt, Mete Fatih Cırıt, Ryohsuke Mitsudome, Tetsuhiro Kawaguchi, Tony Baltovski
 
 1.3.0 (2024-07-16)
 ------------------

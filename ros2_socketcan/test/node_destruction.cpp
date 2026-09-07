@@ -199,7 +199,7 @@ protected:
       }
       GTEST_SKIP() << "vcan0 is not available";
     }
-    ::testing::GTEST_FLAG(death_test_style) = "threadsafe";
+    GTEST_FLAG_SET(death_test_style, "threadsafe");
   }
 };
 }  // namespace

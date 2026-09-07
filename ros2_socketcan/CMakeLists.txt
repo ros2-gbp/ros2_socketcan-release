@@ -105,8 +105,6 @@ if(BUILD_TESTING)
   target_link_libraries(${PROJECT_NAME}_node_destruction_test socket_can_receiver_node)
 endif()
 
-ament_auto_package(
-  USE_SCOPED_HEADER_INSTALL_DIR
-  INSTALL_TO_SHARE
-    launch
+ament_auto_package(INSTALL_TO_SHARE
+  launch
 )

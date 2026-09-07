@@ -1,6 +1,9 @@
 name: ROS2 CI
 
 on:
+  push:
+    branches:
+      - 'main'
   pull_request:
 
 jobs:
@@ -10,16 +13,21 @@ jobs:
       fail-fast: false
       matrix:
         ros_distribution:
-          - humble
-          - jazzy
+          - kilted
+          - lyrical
+          - rolling
         include:
-          # Humble Hawksbill (May 2022 - May 2027)
-          - docker_image: rostooling/setup-ros-docker:ubuntu-jammy-ros-humble-ros-base-latest
-            ros_distribution: humble
+          # Kilted Kaiju (May 2025 - December 2026)
+          - docker_image: rostooling/setup-ros-docker:ubuntu-noble-ros-kilted-ros-base-latest
+            ros_distribution: kilted
             ros_version: 2
-          # Jazzy Jalisco (May 2024 - May 2029)
-          - docker_image: rostooling/setup-ros-docker:ubuntu-noble-ros-jazzy-ros-base-latest
-            ros_distribution: jazzy
+          # Lyrical Luth (May 2026 - May 2031)
+          - docker_image: rostooling/setup-ros-docker:ubuntu-resolute-ros-lyrical-ros-base-latest
+            ros_distribution: lyrical
+            ros_version: 2
+          # Rolling Ridley  (June 2020 - Present)
+          - docker_image: rostooling/setup-ros-docker:ubuntu-resolute-ros-rolling-ros-base-latest
+            ros_distribution: rolling
             ros_version: 2
     container:
       image: ${{ matrix.docker_image }}
