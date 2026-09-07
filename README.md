@@ -1,3 +1,28 @@
+## ros2_socketcan (lyrical) - 1.4.0-1
+
+The packages in the `ros2_socketcan` repository were released into the `lyrical` distro by running `/usr/bin/bloom-release --rosdistro lyrical --track lyrical --no-web --non-interactive ros2_socketcan` on `Mon, 07 Sep 2026 22:38:01 -0000`
+
+These packages were released:
+- `ros2_socketcan`
+- `ros2_socketcan_msgs`
+
+Version of package(s) in repository `ros2_socketcan`:
+
+- upstream repository: https://github.com/autowarefoundation/ros2_socketcan.git
+- release repository: https://github.com/ros2-gbp/ros2_socketcan-release.git
+- rosdistro version: `1.3.0-3`
+- old version: `1.3.0-3`
+- new version: `1.4.0-1`
+
+Versions of tools used:
+
+- bloom version: `0.14.3`
+- catkin_pkg version: `1.1.0`
+- rosdep version: `0.26.0`
+- rosdistro version: `1.1.0`
+- vcstools version: `0.1.42`
+
+
 ## ros2_socketcan (kilted) - 1.4.0-1
 
 The packages in the `ros2_socketcan` repository were released into the `kilted` distro by running `/usr/bin/bloom-release --rosdistro kilted --track kilted --edit-track --no-pull-request --no-web ros2_socketcan` on `Mon, 07 Sep 2026 21:27:49 -0000`
