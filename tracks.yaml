@@ -122,13 +122,15 @@ tracks:
       :{release_inc} --os-name fedora
     - git-bloom-generate -y rosrpm --prefix release/:{ros_distro} :{ros_distro} -i
       :{release_inc} --os-name rhel
-    devel_branch: null
+    - git-bloom-generate -y rosdynrpm --prefix release/:{ros_distro} :{ros_distro}
+      -i :{release_inc} --require-os fedora rhel
+    devel_branch: jazzy
     last_version: 1.3.0
     name: upstream
     patches: null
     release_inc: '1'
     release_repo_url: null
-    release_tag: :{version}
+    release_tag: :{version}-jazzy
     ros_distro: jazzy
     vcs_type: git
     vcs_uri: https://github.com/autowarefoundation/ros2_socketcan.git
