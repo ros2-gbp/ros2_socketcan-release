@@ -1,3 +1,28 @@
+## ros2_socketcan (jazzy) - 1.4.0-1
+
+The packages in the `ros2_socketcan` repository were released into the `jazzy` distro by running `/usr/bin/bloom-release --rosdistro jazzy --track jazzy --edit-track --no-pull-request --no-web ros2_socketcan` on `Mon, 07 Sep 2026 21:21:32 -0000`
+
+These packages were released:
+- `ros2_socketcan`
+- `ros2_socketcan_msgs`
+
+Version of package(s) in repository `ros2_socketcan`:
+
+- upstream repository: https://github.com/autowarefoundation/ros2_socketcan.git
+- release repository: https://github.com/ros2-gbp/ros2_socketcan-release.git
+- rosdistro version: `1.3.0-1`
+- old version: `1.3.0-1`
+- new version: `1.4.0-1`
+
+Versions of tools used:
+
+- bloom version: `0.14.3`
+- catkin_pkg version: `1.1.0`
+- rosdep version: `0.26.0`
+- rosdistro version: `1.1.0`
+- vcstools version: `0.1.42`
+
+
 ## ros2_socketcan (humble) - 1.4.0-1
 
 The packages in the `ros2_socketcan` repository were released into the `humble` distro by running `/usr/bin/bloom-release --rosdistro humble --track humble --edit-track --no-pull-request --no-web ros2_socketcan` on `Mon, 07 Sep 2026 21:06:02 -0000`
