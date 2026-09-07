@@ -17,9 +17,16 @@
 #include "ros2_socketcan/socket_can_receiver_node.hpp"
 #include "ros2_socketcan/socket_can_common.hpp"
 
+#ifdef USE_AGNOCAST_ENABLED
+#include <agnocast_cie_thread_configurator/cie_thread_configurator.hpp>
+#endif
+
+#include <pthread.h>
+
 #include <chrono>
 #include <memory>
 #include <string>
+#include <thread>
 #include <utility>
 #include <vector>
 
@@ -27,6 +34,15 @@ namespace lc = rclcpp_lifecycle;
 using LNI = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface;
 using lifecycle_msgs::msg::State;
 using namespace std::chrono_literals;
+
+namespace
+{
+// Sets the kernel name of a thread. The kernel keeps at most 15 characters.
+void set_thread_name(std::thread & thread, const std::string & name)
+{
+  pthread_setname_np(thread.native_handle(), name.substr(0, 15).c_str());
+}
+}  // namespace
 
 namespace drivers
 {
@@ -38,6 +54,7 @@ SocketCanReceiverNode::SocketCanReceiverNode(rclcpp::NodeOptions options)
   interface_ = this->declare_parameter("interface", "can0");
   use_bus_time_ = this->declare_parameter<bool>("use_bus_time", false);
   enable_fd_ = this->declare_parameter<bool>("enable_can_fd", false);
+  warn_on_receive_timeout_ = this->declare_parameter<bool>("warn_on_receive_timeout", true);
   double interval_sec = this->declare_parameter("interval_sec", 0.01);
   this->declare_parameter("filters", "0:0");
   interval_ns_ = std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -47,6 +64,23 @@ SocketCanReceiverNode::SocketCanReceiverNode(rclcpp::NodeOptions options)
   RCLCPP_INFO(this->get_logger(), "use bus time: %d", use_bus_time_);
   RCLCPP_INFO(this->get_logger(), "can fd enabled: %s", enable_fd_ ? "true" : "false");
   RCLCPP_INFO(this->get_logger(), "interval(s): %f", interval_sec);
+  RCLCPP_INFO(
+    this->get_logger(), "warn on receive timeout: %s",
+    warn_on_receive_timeout_ ? "true" : "false");
+}
+
+SocketCanReceiverNode::~SocketCanReceiverNode()
+{
+  stop_receiver_thread();
+}
+
+void SocketCanReceiverNode::stop_receiver_thread()
+{
+  stop_thread_ = true;
+  if (receiver_thread_ && receiver_thread_->joinable()) {
+    receiver_thread_->join();
+  }
+  receiver_thread_.reset();
 }
 
 LNI::CallbackReturn SocketCanReceiverNode::on_configure(const lc::State & state)
@@ -75,7 +109,17 @@ LNI::CallbackReturn SocketCanReceiverNode::on_configure(const lc::State & state)
       this->create_publisher<ros2_socketcan_msgs::msg::FdFrame>("from_can_bus_fd", 500);
   }
 
+  stop_thread_ = false;
+
+#ifdef USE_AGNOCAST_ENABLED
+  const std::string thread_name = "socket_can_receiver:" + interface_ + ":receiver_thread";
+  receiver_thread_ = std::make_unique<std::thread>(
+    agnocast_cie_thread_configurator::spawn_non_ros2_thread(
+    thread_name.c_str(), &SocketCanReceiverNode::receive, this));
+#else
   receiver_thread_ = std::make_unique<std::thread>(&SocketCanReceiverNode::receive, this);
+#endif
+  set_thread_name(*receiver_thread_, "rx:" + interface_);
 
   return LNI::CallbackReturn::SUCCESS;
 }
@@ -112,15 +156,14 @@ LNI::CallbackReturn SocketCanReceiverNode::on_cleanup(const lc::State & state)
 {
   (void)state;
 
+  stop_receiver_thread();
+
   if (!enable_fd_) {
     frames_pub_.reset();
   } else {
     fd_frames_pub_.reset();
   }
 
-  if (receiver_thread_->joinable()) {
-    receiver_thread_->join();
-  }
   RCLCPP_DEBUG(this->get_logger(), "Receiver cleaned up.");
   return LNI::CallbackReturn::SUCCESS;
 }
@@ -128,6 +171,9 @@ LNI::CallbackReturn SocketCanReceiverNode::on_cleanup(const lc::State & state)
 LNI::CallbackReturn SocketCanReceiverNode::on_shutdown(const lc::State & state)
 {
   (void)state;
+
+  stop_receiver_thread();
+
   RCLCPP_DEBUG(this->get_logger(), "Receiver shutting down.");
   return LNI::CallbackReturn::SUCCESS;
 }
@@ -140,7 +186,7 @@ void SocketCanReceiverNode::receive()
     can_msgs::msg::Frame frame_msg(rosidl_runtime_cpp::MessageInitialization::ZERO);
     frame_msg.header.frame_id = "can";
 
-    while (rclcpp::ok()) {
+    while (rclcpp::ok() && !stop_thread_) {
       if (this->get_current_state().id() != State::PRIMARY_STATE_ACTIVE) {
         std::this_thread::sleep_for(100ms);
         continue;
@@ -148,6 +194,14 @@ void SocketCanReceiverNode::receive()
 
       try {
         receive_id = receiver_->receive(frame_msg.data.data(), interval_ns_);
+      } catch (const SocketCanTimeout &) {
+        if (warn_on_receive_timeout_) {
+          RCLCPP_WARN_THROTTLE(
+            this->get_logger(), *this->get_clock(), 1000,
+            "No CAN frame received on %s within %.3f s",
+            interface_.c_str(), std::chrono::duration<double>(interval_ns_).count());
+        }
+        continue;
       } catch (const std::exception & ex) {
         RCLCPP_WARN_THROTTLE(
           this->get_logger(), *this->get_clock(), 1000,
@@ -174,7 +228,7 @@ void SocketCanReceiverNode::receive()
     ros2_socketcan_msgs::msg::FdFrame fd_frame_msg(rosidl_runtime_cpp::MessageInitialization::ZERO);
     fd_frame_msg.header.frame_id = "can";
 
-    while (rclcpp::ok()) {
+    while (rclcpp::ok() && !stop_thread_) {
       if (this->get_current_state().id() != State::PRIMARY_STATE_ACTIVE) {
         std::this_thread::sleep_for(100ms);
         continue;
@@ -184,6 +238,14 @@ void SocketCanReceiverNode::receive()
 
       try {
         receive_id = receiver_->receive_fd(fd_frame_msg.data.data<void>(), interval_ns_);
+      } catch (const SocketCanTimeout &) {
+        if (warn_on_receive_timeout_) {
+          RCLCPP_WARN_THROTTLE(
+            this->get_logger(), *this->get_clock(), 1000,
+            "No CAN FD frame received on %s within %.3f s",
+            interface_.c_str(), std::chrono::duration<double>(interval_ns_).count());
+        }
+        continue;
       } catch (const std::exception & ex) {
         RCLCPP_WARN_THROTTLE(
           this->get_logger(), *this->get_clock(), 1000,
